@@ -43,10 +43,10 @@ function Get-Monitor {
       "GWY" = "Gateway 2000";
       "HEI" = "Hyundai";
       "HIQ" = "Hyundai ImageQuest";
-      "HIT" = "Hitachi/Nissei";
+      "HIT" = "Hitachi-Nissei";
       "HSD" = "Hannspree Inc";
       "HSL" = "Hansol";
-      "HTC" = "Hitachi/Nissei";
+      "HTC" = "Hitachi-Nissei";
       "HPN" = "Hewlett Packard (HP)";
       "HWP" = "HP";
       "IBM" = "IBM";
