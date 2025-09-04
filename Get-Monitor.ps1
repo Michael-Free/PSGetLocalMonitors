@@ -74,6 +74,7 @@ function Get-Monitor {
       "NOK" = "Nokia";
       "NTT" = "NTT Data";
       "NVD" = "Nvidia";
+      "OPT" = "Optoma";
       "OQO" = "OQO Mobile";
       "OQI" = "OPTIQUEST";
       "PBN" = "Packard Bell";
@@ -92,9 +93,12 @@ function Get-Monitor {
       "RCA" = "RadioShack";
       "REL" = "Relisys";
       "SAM" = "Samsung";
+      "SAN" = "Samsung";
       "SAG" = "Samsung Electronics";
       "SAV" = "Sharp Corporation";
+      "SBI" = "Smarttech";
       "SEC" = "Seiko Epson";
+      "SGI" = "SGI";
       "SHU" = "Shunyei Optoelectronics";
       "SIG" = "Signavio AG";
       "SMC" = "Samtron";
@@ -106,16 +110,19 @@ function Get-Monitor {
       "SRG" = "Sharp Corporation";
       "STN" = "Samtron";
       "STP" = "Sceptre";
+      "SUN" = "Sun Microsystems";
       "SYN" = "Synnex";
       "TAT" = "Tatung Co. of America, Inc.";
       "TCL" = "TCL Communication Inc.";
       "TER" = "TerraMaster";
       "THX" = "THX Inc.";
+      "TOS" = "Toshiba";
       "TPC" = "Taishin Precision Components";
       "TRL" = "Royal Information Company";
       "TRI" = "Tripp Lite";
       "TSB" = "Toshiba, Inc.";
       "UCD" = "Ucdei Electronics";
+      "UNK" = "Unknown";
       "UNM" = "Unisys Corporation";
       "VIA" = "Via Technologies";
       "VID" = "VisionTek";
@@ -125,7 +132,8 @@ function Get-Monitor {
       "XIN" = "Xinjiang Aisin Electronic Co., Ltd.";
       "YAO" = "Yaochuang Electronics Technology";
       "ZEN" = "Zenith Display";
-      "ZCM" = "Zenith Data Systems"
+      "ZCM" = "Zenith Data Systems";
+      "_YV" = "Fujitsu"
     }
         ForEach ($Computer in $ComputerName) {
         try {
