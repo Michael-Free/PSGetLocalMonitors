@@ -115,6 +115,7 @@ $ManufacturerHash = @{
     "OQI" = "OPTIQUEST";
     "PBN" = "Packard Bell";
     "PCK" = "Daewoo";
+    "PLN" = "Planar Systems";
     "PLX" = "Plaxx";
     "PNY" = "PNY Technology";
     "POS" = "Positivo";
