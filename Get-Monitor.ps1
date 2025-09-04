@@ -91,6 +91,7 @@
     "NVD" = "Fujitsu";
     "OPT" = "Optoma";
     "PHL" = "Philips";
+    "PLN" = "Planar Systems";
     "REL" = "Relisys";
     "SAN" = "Samsung";
     "SAM" = "Samsung";
