@@ -1,4 +1,7 @@
-function Get-Monitor {
+function Get-LocalMonitors {
+    [CmdletBinding()]
+    param ()
+
   #List of Manufacture Codes that could be pulled from WMI and their respective full names. Used for translating later down.
   $ManufacturerHash = @{
     'AAC' = 'AcerView';
@@ -130,41 +133,48 @@ function Get-Monitor {
     'ZCM' = 'Zenith Data Systems';
     '_YV' = 'Fujitsu'
   }
-  $ComputerName = $env:COMPUTERNAME
 
   try {
-    $Monitors = Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' -ComputerName $ComputerName -ErrorAction SilentlyContinue
-    if (!$Monitors) {
-      Write-Verbose "No monitors found on computer: $ComputerName"
-      return
-    }
-
+      $Monitors = Get-WmiObject -Namespace "root\WMI" -Class "WMIMonitorID" -ComputerName $env:COMPUTERNAME -ErrorAction Stop
+  } catch {
+    Write-Warning "Failed to query WMI on localhost: $_"
+    return
+  }
+  $Monitor_Array = @()
     foreach ($Monitor in $Monitors) {
-      # Convert data from ASCII encoding and remove trailing null values
-      $Mon_Model = ([System.Text.Encoding]::ASCII.GetString($Monitor.UserFriendlyName)).Replace([char]0, '')
-      $Mon_Serial_Number = ([System.Text.Encoding]::ASCII.GetString($Monitor.SerialNumberID)).Replace([char]0, '')
-      $Mon_Attached_Computer = ($Monitor.PSComputerName).Replace([char]0, '')
-      $Mon_Manufacturer = ([System.Text.Encoding]::ASCII.GetString($Monitor.ManufacturerName)).Replace([char]0, '')
+        if ([System.Text.Encoding]::ASCII.GetString($Monitor.UserFriendlyName) -ne $null) {
+            $Mon_Model = ([System.Text.Encoding]::ASCII.GetString($Monitor.UserFriendlyName)).Replace("$([char]0x0000)","")
+        } else {
+            $Mon_Model = $null
+        }
 
-      # Filter out "non monitors"
-      if ($Mon_Model -like '*800 AIO*' -or $Mon_Model -like '*8300 AiO*') {
-        continue
-      }
+        $Mon_Serial_Number = ([System.Text.Encoding]::ASCII.GetString($Monitor.SerialNumberID)).Replace("$([char]0x0000)","")
+        $Mon_Attached_Computer = ($Monitor.PSComputerName).Replace("$([char]0x0000)","")
+        $Mon_Manufacturer = ([System.Text.Encoding]::ASCII.GetString($Monitor.ManufacturerName)).Replace("$([char]0x0000)","")
 
-      # Create a custom monitor object and fill it with properties
-      $Monitor_Obj = [PSCustomObject]@{
-        Manufacturer     = $Mon_Manufacturer
-        Model            = $Mon_Model
-        SerialNumber     = $Mon_Serial_Number
-        AttachedComputer = $Mon_Attached_Computer
-      }
+        if ($Mon_Model -like "*800 AIO*" -or $Mon_Model -like "*8300 AiO*") { continue }
 
-      # Output the monitor object
-      $Monitor_Obj
+        $Mon_Manufacturer_Friendly = $ManufacturerHash.$Mon_Manufacturer
+        if ($Mon_Manufacturer_Friendly -eq $null) {
+            $Mon_Manufacturer_Friendly = $Mon_Manufacturer
+        }
+
+        $Monitor_Obj = [PSCustomObject]@{
+            Manufacturer     = $Mon_Manufacturer_Friendly
+            Model            = $Mon_Model
+            SerialNumber     = $Mon_Serial_Number
+            AttachedComputer = $Mon_Attached_Computer
+        }
+
+        $Monitor_Array += $Monitor_Obj
     }
+    return $Monitor_Array
   }
-  catch {
-    Write-Error "Failed to retrieve monitor information from computer: $ComputerName. Error: $_"
-  }
+
+$monitors = Get-LocalMonitors
+
+foreach ($monitor in $monitors){
+  #$monitor.gettype()
+  $monitor
 }
 
