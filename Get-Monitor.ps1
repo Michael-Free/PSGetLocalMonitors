@@ -1,4 +1,32 @@
 function Get-LocalMonitors {
+  <#
+  .SYNOPSIS
+      This powershell function gets information about the monitors attached to any computer. It uses EDID information provided by WMI. If this value is not specified it pulls the monitors of the computer that the script is being run on.
+
+  .DESCRIPTION
+      The function begins by looping through each computer specified. For each computer it gets a litst of monitors.
+      It then gets all of the necessary data from each monitor object and converts and cleans the data and places it in a custom PSObject. It then adds
+      the data to an array. At the end the array is displayed.
+
+      This is forked from github users MaxAnderson95.
+
+  .PARAMETER None
+      This cmdlet does not take any parameters.
+
+  .EXAMPLE
+      Get-LocalMonitors
+      -------------------------
+      Retrieves detailed information about all connected monitors on the local computer.
+
+  .NOTES
+      Name        : Get-LocalMonitors.ps1
+      Version     : 1.0
+      Author      : Michael Free
+      DateCreated : 2025-09-04
+
+  .LINK
+      https://github.com/MaxAnderson95/Get-Monitor-Information/blob/master/Get-Monitor.ps1
+  #>
   [CmdletBinding()]
   param ()
   #List of Manufacture Codes that could be pulled from WMI and their respective full names. Used for translating later down.
@@ -175,6 +203,7 @@ function Get-LocalMonitors {
 
 $monitors = Get-LocalMonitors
 
+$myarray = @()
 #count how many monitors we have and loope
 for ($i = 0; $i -lt $monitors.Count; $i++) {
     $monitor = $monitors[$i]
@@ -187,5 +216,7 @@ for ($i = 0; $i -lt $monitors.Count; $i++) {
         AttachedComputer  = $monitor.AttachedComputer
     }
 
-    $monitorObj
+    $myarray += $monitorObj
 }
+
+$myarray | ft
