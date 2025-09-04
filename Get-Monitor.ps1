@@ -133,7 +133,7 @@ function Get-LocalMonitors {
     '_YV' = 'Fujitsu'
   }
   try {
-    $Monitors = Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' -ComputerName $env:COMPUTERNAME -ErrorAction Stop
+    $Monitors = Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' #-ComputerName $env:COMPUTERNAME -ErrorAction Stop
   }
   catch {
     Write-Warning "Failed to query WMI on localhost: $_"
@@ -150,14 +150,14 @@ function Get-LocalMonitors {
       $Mon_Model = [System.Text.Encoding]::ASCII.GetString($Monitor.UserFriendlyName)
     }
     $Mon_Serial_Number = ([System.Text.Encoding]::ASCII.GetString($Monitor.SerialNumberID)).Replace("$([char]0x0000)", '')
-    $Mon_Attached_Computer = ($Monitor.PSComputerName).Replace("$([char]0x0000)", '')
+    $Mon_Attached_Computer = $env:COMPUTERNAME
     $Mon_Manufacturer = ([System.Text.Encoding]::ASCII.GetString($Monitor.ManufacturerName)).Replace("$([char]0x0000)", '')
 
     if ($Mon_Model -like '*800 AIO*' -or $Mon_Model -like '*8300 AiO*') { continue }
 
     $Mon_Manufacturer_Friendly = $ManufacturerHash.$Mon_Manufacturer
 
-    if ($Mon_Manufacturer_Friendly -eq $null) {
+    if ($null -eq $Mon_Manufacturer_Friendly) {
       $Mon_Manufacturer_Friendly = $Mon_Manufacturer
     }
 
@@ -174,4 +174,19 @@ function Get-LocalMonitors {
 }
 
 $monitors = Get-LocalMonitors
-$monitors
+
+#count how many monitors we have and loope
+for ($i = 0; $i -lt $monitors.Count; $i++) {
+    $monitor = $monitors[$i]
+
+    $monitorObj = [PSCustomObject]@{
+        MonitorNumber     = $i + 1
+        Manufacturer      = $monitor.Manufacturer
+        Model             = $monitor.Model
+        SerialNumber      = $monitor.SerialNumber
+        AttachedComputer  = $monitor.AttachedComputer
+    }
+
+    $monitorObj
+    read-host "asdf"
+}
