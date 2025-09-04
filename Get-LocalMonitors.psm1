@@ -206,17 +206,17 @@ $monitors = Get-LocalMonitors
 $myarray = @()
 #count how many monitors we have and loope
 for ($i = 0; $i -lt $monitors.Count; $i++) {
-    $monitor = $monitors[$i]
+  $monitor = $monitors[$i]
 
-    $monitorObj = [PSCustomObject]@{
-        MonitorNumber     = $i + 1
-        Manufacturer      = $monitor.Manufacturer
-        Model             = $monitor.Model
-        SerialNumber      = $monitor.SerialNumber
-        AttachedComputer  = $monitor.AttachedComputer
-    }
+  $monitorObj = [PSCustomObject]@{
+    MonitorNumber    = $i + 1
+    Manufacturer     = $monitor.Manufacturer
+    Model            = $monitor.Model
+    SerialNumber     = $monitor.SerialNumber
+    AttachedComputer = $monitor.AttachedComputer
+  }
 
-    $myarray += $monitorObj
+  $myarray += $monitorObj
 }
 
 $myarray | ft

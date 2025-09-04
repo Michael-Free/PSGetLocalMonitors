@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml" xmlns="http://msh">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-LocalMonitors</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>LocalMonitors</command:noun>
+      <maml:description>
+        <maml:para>This powershell function gets information about the monitors attached to any computer. It uses EDID information provided by WMI. If this value is not specified it pulls the monitors of the computer that the script is being run on.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The function begins by looping through each computer specified. For each computer it gets a litst of monitors. It then gets all of the necessary data from each monitor object and converts and cleans the data and places it in a custom PSObject. It then adds the data to an array. At the end the array is displayed.</maml:para>
+      <maml:para>This is forked from github users MaxAnderson95.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-LocalMonitors</maml:name>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters />
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Name        : Get-LocalMonitors.ps1 Version     : 1.0 Author      : Michael Free DateCreated : 2025-09-04</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-LocalMonitors</dev:code>
+        <dev:remarks>
+          <maml:para>------------------------- Retrieves detailed information about all connected monitors on the local computer.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/MaxAnderson95/Get-Monitor-Information/blob/master/Get-Monitor.ps1</maml:linkText>
+        <maml:uri>https://github.com/MaxAnderson95/Get-Monitor-Information/blob/master/Get-Monitor.ps1</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+</helpItems>
