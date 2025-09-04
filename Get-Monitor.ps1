@@ -133,7 +133,7 @@ function Get-LocalMonitors {
     '_YV' = 'Fujitsu'
   }
   try {
-    $Monitors = Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' #-ComputerName $env:COMPUTERNAME -ErrorAction Stop
+    $Monitors = Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' -ErrorAction Stop #-ComputerName $env:COMPUTERNAME -ErrorAction Stop
   }
   catch {
     Write-Warning "Failed to query WMI on localhost: $_"
@@ -188,5 +188,4 @@ for ($i = 0; $i -lt $monitors.Count; $i++) {
     }
 
     $monitorObj
-    read-host "asdf"
 }
