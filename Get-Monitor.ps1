@@ -58,7 +58,7 @@ function Get-Monitor {
       "KFC" = "KFC Computek";
       "LEN" = "Lenovo";
       "LGD" = "Asus";
-      "LKM" = "ADLAS / AZALEA";
+      "LKM" = "ADLAS - AZALEA";
       "LNK" = "LINK Technologies, Inc.";
       "LPL" = "Fujitsu";
       "LTN" = "Lite-On";
