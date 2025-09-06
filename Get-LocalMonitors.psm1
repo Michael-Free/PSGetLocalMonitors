@@ -208,22 +208,3 @@ function Get-LocalMonitors {
   return , $Monitor_Array #adding comma because powershell 5.1 won't return an array if there's just 1 object.
 }
 
-$monitors = Get-LocalMonitors
-
-$myarray = @()
-#count how many monitors we have and loope
-for ($i = 0; $i -lt $monitors.Count; $i++) {
-  $monitor = $monitors[$i]
-
-  $monitorObj = [PSCustomObject]@{
-    MonitorNumber    = $i + 1
-    Manufacturer     = $monitor.Manufacturer
-    Model            = $monitor.Model
-    SerialNumber     = $monitor.SerialNumber
-    AttachedComputer = $monitor.AttachedComputer
-  }
-
-  $myarray += $monitorObj
-}
-
-$myarray | ft
