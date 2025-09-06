@@ -198,7 +198,7 @@ function Get-LocalMonitors {
 
     $Monitor_Array += $Monitor_Obj
   }
-  return $Monitor_Array
+  return ,$Monitor_Array #adding comma because powershell 5.1 won't return an array if there's just 1 object.
 }
 
 $monitors = Get-LocalMonitors
