@@ -1,32 +1,39 @@
 function Get-LocalMonitors {
   <#
   .SYNOPSIS
-      This powershell function gets information about the monitors attached to any computer. It uses EDID information provided by WMI. If this value is not specified it pulls the monitors of the computer that the script is being run on.
+  Retrieves information about monitors connected to the local computer using EDID data via WMI.
 
   .DESCRIPTION
-      The function begins by looping through each computer specified. For each computer it gets a litst of monitors.
-      It then gets all of the necessary data from each monitor object and converts and cleans the data and places it in a custom PSObject. It then adds
-      the data to an array. At the end the array is displayed.
+  The Get-LocalMonitors function queries the local computer's WMI class 'WMIMonitorID' to extract detailed information about connected monitors. This includes manufacturer name, model, serial number, and the computer the monitor is attached to.
 
-      This is forked from github users MaxAnderson95.
+  It translates the EDID manufacturer codes into friendly manufacturer names using a built-in mapping table.
 
-  .PARAMETER None
-      This cmdlet does not take any parameters.
+  Note: This function only supports querying the **local** computer.
 
   .EXAMPLE
-      Get-LocalMonitors
-      -------------------------
-      Retrieves detailed information about all connected monitors on the local computer.
+  Get-LocalMonitors
+
+  Returns detailed information for all monitors currently connected to the local machine.
+
+  .OUTPUTS
+  [PSCustomObject]
+
+  Each monitor is returned as a custom object with the following properties:
+  - Manufacturer
+  - Model
+  - SerialNumber
+  - AttachedComputer
 
   .NOTES
-      Name        : Get-LocalMonitors.ps1
-      Version     : 1.0
-      Author      : Michael Free
-      DateCreated : 2025-09-04
+  Author      : Michael Free
+  Version     : 0.0.1
+  DateCreated : 2025-09-04
+  Requires    : Administrator privileges (to access WMI in root\WMI)
 
   .LINK
-      https://github.com/MaxAnderson95/Get-Monitor-Information/blob/master/Get-Monitor.ps1
+  https://github.com/MaxAnderson95/Get-Monitor-Information/blob/master/Get-Monitor.ps1
   #>
+
   [CmdletBinding()]
   param ()
   #List of Manufacture Codes that could be pulled from WMI and their respective full names. Used for translating later down.
