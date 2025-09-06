@@ -1,57 +1,54 @@
-﻿# Get-LocalMonitors
+# Get-LocalMonitors
 ## about_Get-LocalMonitors
 
-```
-ABOUT TOPIC NOTE:
-The first header of the about topic should be the topic name.
-The second header contains the lookup name used by the help system.
-
-IE:
-# Some Help Topic Name
-## SomeHelpTopicFileName
-
-This will be transformed into the text file
-as `about_SomeHelpTopicFileName`.
-Do not include file extensions.
-The second header should have no spaces.
-```
-
 # SHORT DESCRIPTION
-{{ Short Description Placeholder }}
-
-```
-ABOUT TOPIC NOTE:
-About topics can be no longer than 80 characters wide when rendered to text.
-Any topics greater than 80 characters will be automatically wrapped.
-The generated about topic will be encoded UTF-8.
-```
+Retrieves monitor details from the local computer using EDID data via WMI.
 
 # LONG DESCRIPTION
-{{ Long Description Placeholder }}
+The `Get-LocalMonitors` function queries the local system for monitor information
+using the `WMIMonitorID` WMI class in the `root\WMI` namespace.
 
-## Optional Subtopics
-{{ Optional Subtopic Placeholder }}
+It extracts Extended Display Identification Data (EDID), including the monitor's
+manufacturer code, model name, and serial number. These byte array values are
+decoded into readable strings. A built-in dictionary is used to convert
+manufacturer codes into human-friendly names.
+
+The function returns one or more custom PowerShell objects with the following properties:
+
+- `Manufacturer`
+- `Model`
+- `SerialNumber`
+- `AttachedComputer`
 
 # EXAMPLES
-{{ Code or descriptive examples of how to leverage the functions described. }}
+    Get-LocalMonitors
+
+    Description:
+    Returns detailed information about each monitor currently connected to the
+    local computer.
 
 # NOTE
-{{ Note Placeholder - Additional information that a user needs to know.}}
+- Author: Michael Free
+- Date Created: 2025-09-04
+- Requires: Administrator privileges (to access WMI in root\WMI)
 
 # TROUBLESHOOTING NOTE
-{{ Troubleshooting Placeholder - Warns users of bugs}}
-
-{{ Explains behavior that is likely to change with fixes }}
+- This function only works on the **local** computer and does not support remote querying.
+- There will likely be updates to change this to a CimInstance.
+- Ensure the script is run with elevated (admin) privileges.
+- WMI service must be running and accessible.
+- Some monitors may return partial or invalid EDID data, leading to "Unknown" values.
+- WMI corruption or permission issues may prevent data from being returned.
 
 # SEE ALSO
-{{ See also placeholder }}
-
-{{ You can also list related articles, blogs, and video URLs. }}
+- Get-WmiObject
+- WMIMonitorID
+- https://github.com/MaxAnderson95/Get-Monitor-Information/blob/master/Get-Monitor.ps1
 
 # KEYWORDS
-{{List alternate names or titles for this topic that readers might use.}}
-
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
+- monitors
+- WMI
+- EDID
+- display
+- hardware inventory
+- PowerShell functions

@@ -6,24 +6,99 @@
       <command:verb>Get</command:verb>
       <command:noun>LocalMonitors</command:noun>
       <maml:description>
-        <maml:para>This powershell function gets information about the monitors attached to any computer. It uses EDID information provided by WMI. If this value is not specified it pulls the monitors of the computer that the script is being run on.</maml:para>
+        <maml:para>Retrieves information about monitors connected to the local computer using EDID data via WMI.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>The function begins by looping through each computer specified. For each computer it gets a litst of monitors. It then gets all of the necessary data from each monitor object and converts and cleans the data and places it in a custom PSObject. It then adds the data to an array. At the end the array is displayed.</maml:para>
-      <maml:para>This is forked from github users MaxAnderson95.</maml:para>
+      <maml:para>The Get-LocalMonitors function queries the local computer's WMI class 'WMIMonitorID' to extract detailed information about connected monitors. This includes manufacturer name, model, serial number, and the computer the monitor is attached to.</maml:para>
+      <maml:para>It translates the EDID manufacturer codes into friendly manufacturer names using a built-in mapping table.</maml:para>
+      <maml:para>Note: This function only supports querying the local computer.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-LocalMonitors</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
-    <command:parameters />
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
     <command:inputTypes />
-    <command:returnValues />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>[PSCustomObject]</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Each monitor is returned as a custom object with the following properties:</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>- Manufacturer</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>- Model</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>- SerialNumber</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>- AttachedComputer</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Name        : Get-LocalMonitors.ps1 Version     : 1.0 Author      : Michael Free DateCreated : 2025-09-04</maml:para>
+        <maml:para>Author      : Michael Free Version     : 0.0.1 DateCreated : 2025-09-04 Requires    : Administrator privileges (to access WMI in root\WMI)</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -31,7 +106,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-LocalMonitors</dev:code>
         <dev:remarks>
-          <maml:para>------------------------- Retrieves detailed information about all connected monitors on the local computer.</maml:para>
+          <maml:para>Returns detailed information for all monitors currently connected to the local machine.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
