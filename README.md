@@ -1,66 +1,40 @@
-~~# Get Monitor Information~~
-~~A Powershell Module/Script that gets the serial number, make and model of a monitor(s) attached to a computer via WMI~~
-~~~~
-~~## Module vs Script~~
-~~I've included both a module and script version of this. This allows you to either run it quickly for one-off situations (script version) or install it (module ~~version) into your PSModule path (see instructions below) for long-term use without relying on a having the script file's path.
-~~~~
-~~## Module Installation~~
-~~If you choose to install the .psm1 module version of this, follow these instructions:~~
-~~~~
-~~1. Find your PSModule paths by running `$env:PSModulePath.Split(";")` in a Powershell prompt~~
-~~2. Place a folder in any one of these paths named Monitor-Information (this can actually be anything)~~
-~~3. Place Monitor-Information.psm1 inside of this folder~~
-~~4. If you have Powershell 3 or higher running the command (in this case Get-Monitor) will automatically import the module, otherwise you'll need to run ~~`Import-Module Monitor-Information` and then run the command.
-~~~~
-~~## Usage (Script)~~
-~~To use the script:~~
-~~~~
-~~```PowerShell~~
-~~PS C:\Scripts\> Get-Monitor.ps1 -ComputerName SSL1-F1102-1G2Z~~
-~~~~
-~~Manufacturer Model    SerialNumber AttachedComputer~~
-~~------------ -----    ------------ ----------------~~
-~~HP           HP E241i CN12345678   SSL1-F1102-1G2Z~~
-~~HP           HP E241i CN91234567   SSL1-F1102-1G2Z~~
-~~```~~
-~~~~
-~~You can also use it with multiple computers:~~
-~~```PowerShell~~
-~~PS C:\Scripts\> $Computers = @("SSL7-F108F-9D4Z","SSL1-F1102-1G2Z","SSA7-F1071-0T7F")~~
-~~PS C:\Scripts\> Get-Monitor.ps1 -ComputerName $Computers~~
-~~~~
-~~Manufacturer Model      SerialNumber AttachedComputer~~
-~~------------ -----      ------------ ----------------~~
-~~HP           HP LA2405x CN12345678   SSL7-F108F-9D4Z~~
-~~HP           HP E241i   CN91234567   SSL1-F1102-1G2Z~~
-~~HP           HP E241i   CN89123456   SSL1-F1102-1G2Z~~
-~~HP           HP E241i   CN78912345   SSL1-F1102-1G2Z~~
-~~HP           HP ZR22w   CN67891234   SSA7-F1071-0T7F~~
-~~```~~
-~~~~
-~~## Usage (Module)~~
-~~The module version is identical accept you don't have to reference the script file and its location, you simply have to run the command from any directory. ~~Once the module is installed, use the command:
-~~~~
-~~```PowerShell~~
-~~PS C:\Scripts\> Get-Monitor -ComputerName SSL1-F1102-1G2Z~~
-~~~~
-~~Manufacturer Model    SerialNumber AttachedComputer~~
-~~------------ -----    ------------ ----------------~~
-~~HP           HP E241i CN12345678   SSL1-F1102-1G2Z~~
-~~HP           HP E241i CN91234567   SSL1-F1102-1G2Z~~
-~~```~~
-~~~~
-~~You can also use it with multiple computers:~~
-~~```PowerShell~~
-~~PS C:\Scripts\> $Computers = @("SSL7-F108F-9D4Z","SSL1-F1102-1G2Z","SSA7-F1071-0T7F")~~
-~~PS C:\Scripts\> Get-Monitor -ComputerName $Computers~~
-~~~~
-~~Manufacturer Model      SerialNumber AttachedComputer~~
-~~------------ -----      ------------ ----------------~~
-~~HP           HP LA2405x CN12345678   SSL7-F108F-9D4Z~~
-~~HP           HP E241i   CN91234567   SSL1-F1102-1G2Z~~
-~~HP           HP E241i   CN89123456   SSL1-F1102-1G2Z~~
-~~HP           HP E241i   CN78912345   SSL1-F1102-1G2Z~~
-~~HP           HP ZR22w   CN67891234   SSA7-F1071-0T7F~~
-~~```~~
-~~~~~~
+# Get-LocalMonitors
+Get-LocalMonitors is a PowerShell function designed to retrieve detailed information about monitors connected to the local computer. It uses Windows Management Instrumentation (WMI) to query the WMIMonitorID class in the root\WMI namespace and extracts Extended Display Identification Data (EDID) such as manufacturer, model, and serial number.
+
+The function translates raw manufacturer codes into human-friendly names using a built-in dictionary, making it easier to identify connected displays.
+
+## Features
+- Retrieves detailed monitor information directly from the local machine.
+- Extracts manufacturer, model, and serial number data from EDID.
+- Translates manufacturer codes to friendly names.
+- Returns results as custom PowerShell objects with clear properties.
+- Does not support remote querying (local machine only).
+- Requires administrator privileges to access WMI data.
+
+## Usage
+Simply run the function without any parameters:
+```powershell
+Get-LocalMonitors
+```
+This returns a list of objects with connected monitor information.
+
+```powershell
+Manufacturer Model    SerialNumber AttachedComputer
+------------ -----    ------------ ----------------
+HP           HP E241i CN12345678   SSL1-F1102-1G2Z
+HP           HP E241i CN91234567   SSL1-F1102-1G2Z
+```
+
+## Requirements
+- PowerShell with access to WMI (root\WMI namespace).
+- Administrator privileges (to query WMI).
+- Function works only on the local computer.
+- WMI service must be running and accessible.
+
+## Troubleshooting
+- Ensure you run PowerShell with elevated privileges.
+- If the WMI service is unavailable or corrupted, no monitor information will be returned.
+- Some monitors may provide incomplete or invalid EDID data, resulting in "Unknown" values.
+- Remote querying is not supported at this time.
+- Future updates may migrate the function to use CIM instances instead of WMI.
+
