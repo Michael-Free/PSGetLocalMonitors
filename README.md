@@ -1,4 +1,4 @@
-# Get Monitor Information
+~~# Get Monitor Information
 A Powershell Module/Script that gets the serial number, make and model of a monitor(s) attached to a computer via WMI
 
 ## Module vs Script
@@ -21,7 +21,7 @@ PS C:\Scripts\> Get-Monitor.ps1 -ComputerName SSL1-F1102-1G2Z
 Manufacturer Model    SerialNumber AttachedComputer
 ------------ -----    ------------ ----------------
 HP           HP E241i CN12345678   SSL1-F1102-1G2Z
-HP           HP E241i CN91234567   SSL1-F1102-1G2Z 
+HP           HP E241i CN91234567   SSL1-F1102-1G2Z
 ```
 
 You can also use it with multiple computers:
@@ -32,8 +32,8 @@ PS C:\Scripts\> Get-Monitor.ps1 -ComputerName $Computers
 Manufacturer Model      SerialNumber AttachedComputer
 ------------ -----      ------------ ----------------
 HP           HP LA2405x CN12345678   SSL7-F108F-9D4Z
-HP           HP E241i   CN91234567   SSL1-F1102-1G2Z 
-HP           HP E241i   CN89123456   SSL1-F1102-1G2Z 
+HP           HP E241i   CN91234567   SSL1-F1102-1G2Z
+HP           HP E241i   CN89123456   SSL1-F1102-1G2Z
 HP           HP E241i   CN78912345   SSL1-F1102-1G2Z
 HP           HP ZR22w   CN67891234   SSA7-F1071-0T7F
 ```
@@ -47,7 +47,7 @@ PS C:\Scripts\> Get-Monitor -ComputerName SSL1-F1102-1G2Z
 Manufacturer Model    SerialNumber AttachedComputer
 ------------ -----    ------------ ----------------
 HP           HP E241i CN12345678   SSL1-F1102-1G2Z
-HP           HP E241i CN91234567   SSL1-F1102-1G2Z 
+HP           HP E241i CN91234567   SSL1-F1102-1G2Z
 ```
 
 You can also use it with multiple computers:
@@ -58,8 +58,9 @@ PS C:\Scripts\> Get-Monitor -ComputerName $Computers
 Manufacturer Model      SerialNumber AttachedComputer
 ------------ -----      ------------ ----------------
 HP           HP LA2405x CN12345678   SSL7-F108F-9D4Z
-HP           HP E241i   CN91234567   SSL1-F1102-1G2Z 
-HP           HP E241i   CN89123456   SSL1-F1102-1G2Z 
+HP           HP E241i   CN91234567   SSL1-F1102-1G2Z
+HP           HP E241i   CN89123456   SSL1-F1102-1G2Z
 HP           HP E241i   CN78912345   SSL1-F1102-1G2Z
 HP           HP ZR22w   CN67891234   SSA7-F1071-0T7F
 ```
+~~
