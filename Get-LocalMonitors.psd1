@@ -98,7 +98,7 @@ PrivateData = @{
         Tags = @('WMI', 'CIM', 'Monitor', 'Inventory')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/Michael-Free/PSGetLocalMonitors/blob/master/LICENSE'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/Michael-Free/PSGetLocalMonitors'
