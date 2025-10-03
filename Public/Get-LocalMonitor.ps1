@@ -26,7 +26,6 @@ function Get-LocalMonitor {
 
   .NOTES
   Author      : Michael Free
-  Version     : 0.0.1
   DateCreated : 2025-09-04
   Requires    : Administrator privileges (to access WMI in root\WMI)
 

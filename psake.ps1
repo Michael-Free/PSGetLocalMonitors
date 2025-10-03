@@ -208,7 +208,7 @@ Task AnalyzeAndLintScripts -Depends EnforceSyleRules {
       $_.Name -ne 'psake.ps1'
     }
   if ($files.Count -eq 0) {
-    throw 'No script files found to analyze.'
+    throw 'No powershell files found to analyze.'
   }
   $issuesFound = $false
   foreach ($file in $files) {
