@@ -170,7 +170,7 @@ function Get-LocalMonitor {
     $Monitors = Get-CimInstance -Namespace root\wmi -ClassName WMIMonitorID -ErrorAction Stop
   }
   catch {
-    Write-Warning "Failed to query WMI on localhost: $_"
+    Write-Warning "Failed to query CIM Instance on localhost: $_"
     return
   }
 
