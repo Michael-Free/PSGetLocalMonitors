@@ -183,6 +183,10 @@ function Get-LocalMonitor {
       $Mon_Model = [System.Text.Encoding]::ASCII.GetString($Monitor.UserFriendlyName)
     }
     $Mon_Serial_Number = ([System.Text.Encoding]::ASCII.GetString($Monitor.SerialNumberID)).Replace("$([char]0x0000)", '')
+    if ($null -eq $Mon_Serial_Number -or $Mon_Serial_Number -eq "0") {
+      $Mon_Serial_Number = 'Unknown'
+    }
+
     $Mon_Attached_Computer = $env:COMPUTERNAME
     $Mon_Manufacturer = ([System.Text.Encoding]::ASCII.GetString($Monitor.ManufacturerName)).Replace("$([char]0x0000)", '')
 
