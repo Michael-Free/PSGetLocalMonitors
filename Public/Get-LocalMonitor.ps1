@@ -167,46 +167,51 @@ function Get-LocalMonitor {
     '_YV' = 'Fujitsu'
   }
   try {
-    $Monitors = Get-CimInstance -Namespace root\wmi -ClassName WMIMonitorID -ErrorAction Stop
+    $monitors = Get-CimInstance -Namespace root\wmi -ClassName WMIMonitorID -ErrorAction Stop
   }
   catch {
     throw "Failed to query CIM Instance on localhost: $_"
   }
 
-  $Monitor_Array = @()
+  $monitorArray = @()
 
-  foreach ($Monitor in $Monitors) {
-    if ($null -eq $Monitor.UserFriendlyName) {
-      $Mon_Model = 'Unknown'
+  foreach ($monitor in $monitors) {
+    if ($null -eq $monitor.UserFriendlyName) {
+      $monitorModel = 'Unknown'
+    }
+    elseif ($monitorModel -like '*800 AIO*' -or $monitorModel -like '*8300 AiO*') {
+      $monitorModel = 'Unknown'
     }
     else {
-      $Mon_Model = [System.Text.Encoding]::ASCII.GetString($Monitor.UserFriendlyName)
-    }
-    $Mon_Serial_Number = ([System.Text.Encoding]::ASCII.GetString($Monitor.SerialNumberID)).Replace("$([char]0x0000)", '')
-    if ($null -eq $Mon_Serial_Number -or $Mon_Serial_Number -eq "0") {
-      $Mon_Serial_Number = 'Unknown'
+      $monitorModel = [System.Text.Encoding]::ASCII.GetString($monitor.UserFriendlyName)
     }
 
-    $Mon_Attached_Computer = $env:COMPUTERNAME
-    $Mon_Manufacturer = ([System.Text.Encoding]::ASCII.GetString($Monitor.ManufacturerName)).Replace("$([char]0x0000)", '')
+    $monitorSerialNumber = ([System.Text.Encoding]::ASCII.GetString($monitor.SerialNumberID)).Replace("$([char]0x0000)", '')
 
-    if ($Mon_Model -like '*800 AIO*' -or $Mon_Model -like '*8300 AiO*') { continue }
-
-    $Mon_Manufacturer_Friendly = $ManufacturerHash.$Mon_Manufacturer
-
-    if ($null -eq $Mon_Manufacturer_Friendly) {
-      $Mon_Manufacturer_Friendly = $Mon_Manufacturer
+    if ($null -eq $monitorSerialNumber -or $monitorSerialNumber -eq "0" -or $monitorSerialNumber -eq "") {
+      $monitorSerialNumber = 'Unknown'
     }
 
-    $Monitor_Obj = [PSCustomObject]@{
-      Manufacturer     = $Mon_Manufacturer_Friendly
-      Model            = $Mon_Model
-      SerialNumber     = $Mon_Serial_Number
-      AttachedComputer = $Mon_Attached_Computer
+    $monitorManufacturer = ([System.Text.Encoding]::ASCII.GetString($monitor.ManufacturerName)).Replace("$([char]0x0000)", '')
+
+    if ($ManufacturerHash.ContainsKey($monitorManufacturer)) {
+      $monitorManufacturerFriendlyName = $ManufacturerHash[$monitorManufacturer]
+    }
+    else {
+      $monitorManufacturerFriendlyName = 'Unknown'
     }
 
-    $Monitor_Array += $Monitor_Obj
+    $monitorAttachedComputer = $env:COMPUTERNAME
+
+    $monitorObject = [PSCustomObject]@{
+      Manufacturer     = $monitorManufacturerFriendlyName
+      Model            = $monitorModel
+      SerialNumber     = $monitorSerialNumber
+      AttachedComputer = $monitorAttachedComputer
+    }
+
+    $monitorArray += $monitorObject
   }
-  return , $Monitor_Array #adding comma because powershell 5.1 won't return an array if there's just 1 object.
+  return , $monitorArray #adding comma because powershell 5.1 won't return an array if there's just 1 object.
 }
 
