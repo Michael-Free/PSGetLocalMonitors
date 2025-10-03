@@ -167,7 +167,7 @@ function Get-LocalMonitor {
     '_YV' = 'Fujitsu'
   }
   try {
-    $Monitors = Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' -ErrorAction Stop
+    $Monitors = Get-CimInstance -Namespace root\wmi -ClassName WMIMonitorID -ErrorAction Stop
   }
   catch {
     Write-Warning "Failed to query WMI on localhost: $_"
