@@ -1,17 +1,17 @@
-function Get-LocalMonitors {
+function Get-LocalMonitor {
   <#
   .SYNOPSIS
   Retrieves information about monitors connected to the local computer using EDID data via WMI.
 
   .DESCRIPTION
-  The Get-LocalMonitors function queries the local computer's WMI class 'WMIMonitorID' to extract detailed information about connected monitors. This includes manufacturer name, model, serial number, and the computer the monitor is attached to.
+  The Get-LocalMonitor function queries the local computer's WMI class 'WMIMonitorID' to extract detailed information about connected monitors. This includes manufacturer name, model, serial number, and the computer the monitor is attached to.
 
   It translates the EDID manufacturer codes into friendly manufacturer names using a built-in mapping table.
 
   Note: This function only supports querying the **local** computer.
 
   .EXAMPLE
-  Get-LocalMonitors
+  Get-LocalMonitor
 
   Returns detailed information for all monitors currently connected to the local machine.
 

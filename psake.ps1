@@ -7,7 +7,7 @@ Properties {
   $Description = 'Module description'
   $ModuleManifest = 'PSModulePipeline.psd1'
   $projectPath = "$PSScriptRoot"
-  $PublicFunctions = @()
+  $PublicFunctions = @('Get-LocalMonitor')
   $PrivateFunctions = @()
   $moduleContent = @'
 foreach ($folder in @('Private', 'Public')) {
@@ -28,11 +28,10 @@ Export-ModuleMember -Function $exportedFunctions
 
 }
 
-#Task default -Depends InitializeProject, ScaffoldProject, EnforceSyleRules, AnalyzeAndLintScripts, PerformTests, CheckCommentBasedHelp, BumpModuleVersion
-Task default -Depends EnforceSyleRules, BuildDocumentation, ValidateManifest
+Task default -Depends InitializeProject, ScaffoldProject, EnforceSyleRules, AnalyzeAndLintScripts, PerformTests, CheckCommentBasedHelp, BumpModuleVersion
 
 Task InitializeProject {
-  Write-Warning 'Initializing project at:'
+  Write-Warning "Initializing project at $($PSScriptRoot)"
   $requiredModules = @('PlatyPS', 'Pester', 'PSScriptAnalyzer')
   foreach ($module in $requiredModules) {
     if (-not (Get-Module -ListAvailable -Name $module)) {
@@ -58,7 +57,7 @@ Task InitializeProject {
       Remove-Module -Name $ModuleName -Force -ErrorAction Stop
     }
     catch {
-      Write-Error "Failed to remove $($ModuleName): $_"
+      throw "Failed to remove $($ModuleName): $_"
     }
   }
   $modulePath = "$PSScriptRoot\$ModuleName.psm1"
@@ -69,7 +68,7 @@ Task InitializeProject {
       Write-Warning "$moduleFile created successfully."
     }
     catch {
-      Write-Error "Failed to create $($modulePath): $_"
+      throw "Failed to create $($modulePath): $_"
     }
   }
   $requiredDirs = @('Tests', 'Public', 'Private', 'Other')
@@ -84,13 +83,12 @@ Task InitializeProject {
   }
 }
 
-Task ScaffoldProject {
-  Write-Warning 'Scaffolding Module'
+Task ScaffoldProject -Depends InitializeProject {
   foreach ($funcName in $PublicFunctions) {
     $filename = "$funcName.ps1"
     $filepath = Join-Path -Path (Join-Path $projectPath 'Public') -ChildPath $filename
     if (-not (Test-Path -Path $filepath)) {
-      Write-Output "Creating function file: $filepath"
+      Write-Warning "Creating function file: $filepath"
       $FunctionTemplate = @"
 function $funcName {
     return '$false'
@@ -115,13 +113,7 @@ function $funcName {
 "@
         $FunctionTemplate | Out-File -FilePath $filepath -Encoding UTF8 -Force
       }
-      else {
-        Write-Verbose "Private function file already exists: $filepath"
-      }
     }
-  }
-  else {
-    Write-Verbose 'No private functions defined. Skipping Private directory scaffolding.'
   }
   $allFunctions = @($PublicFunctions + $PrivateFunctions)
   if ($allFunctions.Count -gt 0) {
@@ -139,17 +131,11 @@ Describe '$funcName' {
         Write-Output "Creating test file: $($testFilePath)"
         $TestTemplate | Out-File -FilePath $testFilePath -Encoding UTF8 -Force
       }
-      else {
-        Write-Verbose "Test file already exists: $testFilePath"
-      }
     }
-  }
-  else {
-    Write-Verbose 'No public or private functions defined — skipping test scaffolding.'
   }
 }
 
-Task EnforceSyleRules {
+Task EnforceSyleRules -Depends ScaffoldProject {
   $ruleset = @{
     IncludeRules = @(
       'PSPlaceOpenBrace',
@@ -197,8 +183,7 @@ Task EnforceSyleRules {
   }
   $files = Get-ChildItem -Path $PSScriptRoot -Recurse -Include *.ps1, *.psm1 -File
   if ($files.Count -eq 0) {
-    Write-Output 'No PowerShell script files found to format.'
-    return
+    throw 'No Powershell files to format'
   }
   foreach ($file in $files) {
     Write-Output "Formatting $($file.FullName)..."
@@ -209,25 +194,21 @@ Task EnforceSyleRules {
         $formattedContent | Set-Content -Path $file.FullName -Encoding UTF8
         Write-Output "Formatted: $($file.FullName)"
       }
-      else {
-        Write-Output "Already formatted: $($file.FullName)"
-      }
     }
     catch {
-      Write-Warning "Failed to format $($file.FullName): $_"
+      throw "Failed to format $($file.FullName): $_"
     }
   }
 }
 
-Task AnalyzeAndLintScripts {
+Task AnalyzeAndLintScripts -Depends EnforceSyleRules {
   $files = Get-ChildItem -Path $PSScriptRoot -Recurse -Include *.ps1, *.psm1 -File |
     Where-Object {
       $_.Name -notlike '*.Tests.ps1' -and
       $_.Name -ne 'psake.ps1'
     }
   if ($files.Count -eq 0) {
-    Write-Output 'No script files found to analyze.'
-    return
+    throw 'No script files found to analyze.'
   }
   $issuesFound = $false
   foreach ($file in $files) {
