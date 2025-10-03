@@ -188,7 +188,7 @@ function Get-LocalMonitor {
 
     $monitorSerialNumber = ([System.Text.Encoding]::ASCII.GetString($monitor.SerialNumberID)).Replace("$([char]0x0000)", '')
 
-    if ($null -eq $monitorSerialNumber -or $monitorSerialNumber -eq "0" -or $monitorSerialNumber -eq "") {
+    if ($null -eq $monitorSerialNumber -or $monitorSerialNumber -eq '0' -or $monitorSerialNumber -eq '') {
       $monitorSerialNumber = 'Unknown'
     }
 
@@ -214,4 +214,5 @@ function Get-LocalMonitor {
   }
   return , $monitorArray #adding comma because powershell 5.1 won't return an array if there's just 1 object.
 }
+
 
