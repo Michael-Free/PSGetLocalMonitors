@@ -1,5 +1,7 @@
 # Get-LocalMonitor.Tests.ps1
+
 BeforeAll {
+  # Import the function under test
   . "$PSScriptRoot\..\Public\Get-LocalMonitor.ps1"
 }
 
@@ -26,10 +28,11 @@ Describe 'Get-LocalMonitor Function Tests' {
     It 'Each returned object should have required properties' {
       $results = @(Get-LocalMonitor)
       foreach ($monitor in $results) {
-        $monitor.PSObject.Properties.Name | Should -Contain 'Manufacturer'
-        $monitor.PSObject.Properties.Name | Should -Contain 'Model'
-        $monitor.PSObject.Properties.Name | Should -Contain 'SerialNumber'
-        $monitor.PSObject.Properties.Name | Should -Contain 'AttachedComputer'
+        $monitor | Should -BeOfType [PSCustomObject]
+        $monitor.PSObject.Properties.Value | Should -Contain 'Manufacturer'
+        $monitor.PSObject.Properties.Value | Should -Contain 'Model'
+        $monitor.PSObject.Properties.Value | Should -Contain 'SerialNumber'
+        $monitor.PSObject.Properties.Value | Should -Contain 'AttachedComputer'
       }
     }
   }
