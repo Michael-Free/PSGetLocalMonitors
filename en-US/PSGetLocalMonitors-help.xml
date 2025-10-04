@@ -6,11 +6,11 @@
       <command:verb>Get</command:verb>
       <command:noun>LocalMonitor</command:noun>
       <maml:description>
-        <maml:para>Retrieves information about monitors connected to the local computer using EDID data via WMI</maml:para>
+        <maml:para>Retrieves information about monitors connected to the local computer using EDID data via WMI.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Queries the WMIMonitorID class to extract monitor manufacturer, model, and serial number. Translates manufacturer codes to friendly names and handles edge cases like null EDID fields</maml:para>
+      <maml:para>Queries the WMIMonitorID class to extract monitor manufacturer, model, and serial number. Translates manufacturer codes to friendly names and handles edge cases like null or empty EDID fields.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -88,15 +88,18 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>- This function requires administrative privileges to query WMI instances.</maml:para>
+        <maml:para>- The function assumes the WMIMonitorID class is available on the local machine.</maml:para>
+        <maml:para>- Handles edge cases for null or empty EDID fields and translates manufacturer codes to friendly names.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-LocalMonitor -Verbose
+Retrieves detailed information about monitors connected to the local computer, including manufacturer details and serial numbers. Outputs to the console if verbose output is enabled.</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para></maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

@@ -1,18 +1,27 @@
 <#
 .SYNOPSIS
-
-Retrieves information about monitors connected to the local computer using EDID data via WMI
+Retrieves information about monitors connected to the local computer using EDID data via WMI.
 
 .DESCRIPTION
 Queries the WMIMonitorID class to extract monitor manufacturer, model, and serial number.
-Translates manufacturer codes to friendly names and handles edge cases like null EDID fields
+Translates manufacturer codes to friendly names and handles edge cases like null or empty EDID fields.
 
 .OUTPUTS
 [PSCustomObject] with properties:
-    - Manufacturer
-    - Model
-    - SerialNumber
-    - AttachedComputer
+- Manufacturer
+- Model
+- SerialNumber
+- AttachedComputer
+
+.NOTES
+- This function requires administrative privileges to query WMI instances.
+- The function assumes the WMIMonitorID class is available on the local machine.
+- Handles edge cases for null or empty EDID fields and translates manufacturer codes to friendly names.
+
+.EXAMPLE
+Get-LocalMonitor -Verbose
+Retrieves detailed information about monitors connected to the local computer, including manufacturer details and serial numbers. Outputs to the console if verbose output is enabled.
+
 #>
 function Get-LocalMonitor {
   [CmdletBinding()]

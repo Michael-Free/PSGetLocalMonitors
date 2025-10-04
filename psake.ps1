@@ -302,6 +302,53 @@ Task CheckCommentBasedHelp {
   }
 }
 
+Task BuildDocumentation {
+  $moduleParentFolder = (Get-Item $PSScriptRoot).Parent.FullName
+  $moduleFolder = Join-Path $moduleParentFolder $ModuleName
+  $docsOutputFolder = Join-Path $moduleFolder 'Docs'
+  $helpOutputFolder = Join-Path $moduleFolder 'en-US'
+  if (-not ($env:PSModulePath -split ';' | Where-Object { $_ -eq $moduleParentFolder })) {
+    $env:PSModulePath += ";$moduleParentFolder"
+  }
+  if (-not (Test-Path $moduleFolder)) {
+    throw "Module folder '$moduleFolder' does not exist."
+  }
+  if (-not (Test-Path $docsOutputFolder)) {
+    New-Item -Path $docsOutputFolder -ItemType Directory | Out-Null
+  }
+  if (-not (Test-Path $helpOutputFolder)) {
+    New-Item -Path $helpOutputFolder -ItemType Directory | Out-Null
+  }
+  $loadedModules = Get-module
+  if ($loadedModules.Name -eq $moduleName) {
+    remove-module -name $moduleName
+  }
+  Import-Module "$PSScriptRoot\$ModuleName.psm1"
+  get-module
+  $exportedFunctions = (Get-Module -Name $moduleName).ExportedCommands.Keys | Sort-Object
+  $existingDocs = Get-ChildItem -Path $docsOutputFolder -Filter '*.md' |
+    Select-Object -ExpandProperty BaseName |
+    Sort-Object
+  if (-not ($exportedFunctions -eq $existingDocs)) {
+    Import-Module "$PSScriptRoot\$ModuleName.psm1"
+    Get-ChildItem -Path $docsOutputFolder -Filter '*.md' | Remove-Item -Force
+    New-MarkdownHelp -Module $moduleName `
+      -OutputFolder $docsOutputFolder `
+      -Force `
+      -WithModulePage `
+      -Encoding ([System.Text.Encoding]::UTF8)
+  }
+  $aboutMdFile = Join-Path $docsOutputFolder "about_$moduleName.md"
+  if (-not (Test-Path $aboutMdFile)) {
+    New-MarkdownAboutHelp -OutputFolder $docsOutputFolder -AboutName $moduleName
+  }
+  if (-not (Test-Path "$helpOutputFolder\$ModuleName-help.xml")) {
+    New-ExternalHelp -Path $docsOutputFolder -OutputPath $helpOutputFolder -Force
+  }
+  Remove-Module -Name $ModuleName -Force
+}
+
+
 Task ValidateManifest {
   if (-not (Test-Path -Path $ModuleManifest)) {
     New-ModuleManifest -Path $ModuleManifest `
@@ -350,49 +397,3 @@ Task ValidateManifest {
   #    Write-Error "Manifest validation failed: $_"
   #}
 }
-
-Task BuildDocumentation {
-  $moduleParentFolder = (Get-Item $PSScriptRoot).Parent.FullName
-  $moduleFolder = Join-Path $moduleParentFolder $ModuleName
-  $docsOutputFolder = Join-Path $moduleFolder 'Docs'
-  $helpOutputFolder = Join-Path $moduleFolder 'en-US'
-  if (-not ($env:PSModulePath -split ';' | Where-Object { $_ -eq $moduleParentFolder })) {
-    $env:PSModulePath += ";$moduleParentFolder"
-  }
-  if (-not (Test-Path $moduleFolder)) {
-    throw "Module folder '$moduleFolder' does not exist."
-  }
-  if (-not (Test-Path $docsOutputFolder)) {
-    New-Item -Path $docsOutputFolder -ItemType Directory | Out-Null
-  }
-  if (-not (Test-Path $helpOutputFolder)) {
-    New-Item -Path $helpOutputFolder -ItemType Directory | Out-Null
-  }
-  $loadedModules = Get-module
-  if ($loadedModules.Name -eq $moduleName) {
-    remove-module -name $moduleName
-  }
-  Import-Module ".\$ModuleName.psm1" -Force -ErrorAction Stop
-  $exportedFunctions = (Get-Module -Name $moduleName).ExportedCommands.Keys | Sort-Object
-  $existingDocs = Get-ChildItem -Path $docsOutputFolder -Filter '*.md' |
-    Select-Object -ExpandProperty BaseName |
-    Sort-Object
-  if (-not ($exportedFunctions -eq $existingDocs)) {
-    Get-ChildItem -Path $docsOutputFolder -Filter '*.md' | Remove-Item -Force
-    New-MarkdownHelp -Module $moduleName `
-      -OutputFolder $docsOutputFolder `
-      -Force `
-      -WithModulePage `
-      -Encoding ([System.Text.Encoding]::UTF8)
-  }
-  $aboutMdFile = Join-Path $docsOutputFolder "about_$moduleName.md"
-  if (-not (Test-Path $aboutMdFile)) {
-    New-MarkdownAboutHelp -OutputFolder $docsOutputFolder -AboutName $moduleName
-  }
-  if (-not (Test-Path "$helpOutputFolder\$ModuleName-help.xml")) {
-    New-ExternalHelp -Path $docsOutputFolder -OutputPath $helpOutputFolder -Force
-  }
-  Remove-Module -Name $ModuleName -Force
-}
-
-
