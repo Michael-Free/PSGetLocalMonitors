@@ -1,9 +1,12 @@
 <#
 .SYNOPSIS
+
 Retrieves information about monitors connected to the local computer using EDID data via WMI
+
 .DESCRIPTION
 Queries the WMIMonitorID class to extract monitor manufacturer, model, and serial number.
 Translates manufacturer codes to friendly names and handles edge cases like null EDID fields
+
 .OUTPUTS
 [PSCustomObject] with properties:
     - Manufacturer

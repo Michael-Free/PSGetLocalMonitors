@@ -5,7 +5,7 @@ Properties {
   $CompanyName = 'Michael Free'
   $Copyright = '(c) 2025 Michael Free. All rights reserved.'
   $Description = 'Module description'
-  $ModuleManifest = 'PSModulePipeline.psd1'
+  $ModuleManifest = 'PSGetLocalMonitors.psd1'
   $projectPath = "$PSScriptRoot"
   $PublicFunctions = @('Get-LocalMonitor')
   $PrivateFunctions = @()
@@ -28,7 +28,7 @@ Export-ModuleMember -Function $exportedFunctions
 
 }
 
-Task default -Depends InitializeProject, ScaffoldProject, EnforceSyleRules, AnalyzeAndLintScripts, PerformTests, CheckCommentBasedHelp, BuildDocumentation
+Task default -Depends InitializeProject, ScaffoldProject, EnforceSyleRules, AnalyzeAndLintScripts, PerformTests, CheckCommentBasedHelp, ValidateManifest, BuildDocumentation
 
 Task InitializeProject {
   Write-Warning "Initializing project at $($PSScriptRoot)"
@@ -302,6 +302,55 @@ Task CheckCommentBasedHelp {
   }
 }
 
+Task ValidateManifest {
+  if (-not (Test-Path -Path $ModuleManifest)) {
+    New-ModuleManifest -Path $ModuleManifest `
+      -RootModule "$ModuleName.psm1" `
+      -Author $Author `
+      -CompanyName $CompanyName `
+      -Copyright $Copyright `
+      -Description $Description `
+      -ModuleVersion $InitialVersion `
+      -Tags @('Placeholder') `
+      -FunctionsToExport '*' `
+      -NestedModules @() `
+      -RequiredModules @() `
+      -PrivateData @{
+      PSData = @{
+        LicenseUri   = ''
+        ProjectUri   = ''
+        IconUri      = ''
+        ReleaseNotes = ''
+      }
+    }
+  }
+  if (Test-Path -Path $ModuleManifest) {
+    $manifestData = Import-PowerShellDataFile -Path $ModuleManifest
+    $currentVersionString = $manifestData.ModuleVersion
+    $currentVersion = [Version]$currentVersionString
+    $build = if ($currentVersion.Build -ge 0) { $currentVersion.Build } else { 0 }
+    $newBuild = $build + 1
+    $newVersion = New-Object System.Version($currentVersion.Major, $currentVersion.Minor, $newBuild)
+    $newVersionString = $newVersion.ToString()
+    $manifestText = Get-Content -Path $ModuleManifest -Raw
+    $pattern = '(?m)^ModuleVersion\s*=\s*''.*?'''
+    $replacement = "ModuleVersion = '$newVersionString'"
+    if ($manifestText -match $pattern) {
+      $newManifestText = $manifestText -replace $pattern, $replacement
+      Set-Content -Path $ModuleManifest -Value $newManifestText -Encoding UTF8
+    }
+  }
+  #Import-Module .\PSModulePipeline.psd1 -Verbose -Force
+  #Test-ModuleManifest -Path .\PSModulePipeline.psd1
+  #  try {
+  #    Test-ModuleManifest -Path .\PSModulePipeline.psd1
+  #    Write-Host "Manifest validation passed."
+  #}
+  #catch {
+  #    Write-Error "Manifest validation failed: $_"
+  #}
+}
+
 Task BuildDocumentation {
   $moduleParentFolder = (Get-Item $PSScriptRoot).Parent.FullName
   $moduleFolder = Join-Path $moduleParentFolder $ModuleName
@@ -346,51 +395,4 @@ Task BuildDocumentation {
   Remove-Module -Name $ModuleName -Force
 }
 
-Task ValidateManifest {
-  if (-not (Test-Path -Path $ModuleManifest)) {
-    New-ModuleManifest -Path $ModuleManifest `
-      -RootModule "$ModuleName.psm1" `
-      -Author $Author `
-      -CompanyName $CompanyName `
-      -Copyright $Copyright `
-      -Description $Description `
-      -ModuleVersion $InitialVersion `
-      -Tags @() `
-      -FunctionsToExport '*' `
-      -NestedModules @() `
-      -RequiredModules @() `
-      -PrivateData @{
-      PSData = @{
-        LicenseUri   = ''
-        ProjectUri   = ''
-        IconUri      = ''
-        ReleaseNotes = ''
-      }
-    }
-  }
-  if (Test-Path -Path $ModuleManifest) {
-    $manifestData = Import-PowerShellDataFile -Path $ModuleManifest
-    $currentVersionString = $manifestData.ModuleVersion
-    $currentVersion = [Version]$currentVersionString
-    $build = if ($currentVersion.Build -ge 0) { $currentVersion.Build } else { 0 }
-    $newBuild = $build + 1
-    $newVersion = New-Object System.Version($currentVersion.Major, $currentVersion.Minor, $newBuild)
-    $newVersionString = $newVersion.ToString()
-    $manifestText = Get-Content -Path $ModuleManifest -Raw
-    $pattern = '(?m)^ModuleVersion\s*=\s*''.*?'''
-    $replacement = "ModuleVersion = '$newVersionString'"
-    if ($manifestText -match $pattern) {
-      $newManifestText = $manifestText -replace $pattern, $replacement
-      Set-Content -Path $ModuleManifest -Value $newManifestText -Encoding UTF8
-    }
-  }
-  #Import-Module .\PSModulePipeline.psd1 -Verbose -Force
-  #Test-ModuleManifest -Path .\PSModulePipeline.psd1
-  #  try {
-  #    Test-ModuleManifest -Path .\PSModulePipeline.psd1
-  #    Write-Host "Manifest validation passed."
-  #}
-  #catch {
-  #    Write-Error "Manifest validation failed: $_"
-  #}
-}
+
