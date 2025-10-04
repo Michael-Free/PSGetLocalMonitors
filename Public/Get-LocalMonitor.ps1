@@ -1,41 +1,23 @@
 function Get-LocalMonitor {
   <#
-  .SYNOPSIS
-  Retrieves information about monitors connected to the local computer using EDID data via WMI.
+    .SYNOPSIS
+    Retrieves information about monitors connected to the local computer using EDID data via WMI.
 
-  .DESCRIPTION
-  The Get-LocalMonitor function queries the local computer's WMI class 'WMIMonitorID' to extract detailed information about connected monitors. This includes manufacturer name, model, serial number, and the computer the monitor is attached to.
+    .DESCRIPTION
+    Queries the WMIMonitorID class to extract monitor manufacturer, model, and serial number.
+    Translates manufacturer codes to friendly names and handles edge cases like null EDID fields.
 
-  It translates the EDID manufacturer codes into friendly manufacturer names using a built-in mapping table.
-
-  Note: This function only supports querying the **local** computer.
-
-  .EXAMPLE
-  Get-LocalMonitor
-
-  Returns detailed information for all monitors currently connected to the local machine.
-
-  .OUTPUTS
-  [PSCustomObject]
-
-  Each monitor is returned as a custom object with the following properties:
-  - Manufacturer
-  - Model
-  - SerialNumber
-  - AttachedComputer
-
-  .NOTES
-  Author      : Michael Free
-  DateCreated : 2025-09-04
-  Requires    : Administrator privileges (to access WMI in root\WMI)
-
-  .LINK
-  https://github.com/MaxAnderson95/Get-Monitor-Information/blob/master/Get-Monitor.ps1
-  #>
+    .OUTPUTS
+    [PSCustomObject] with properties:
+        - Manufacturer
+        - Model
+        - SerialNumber
+        - AttachedComputer
+    #>
 
   [CmdletBinding()]
   param ()
-  #List of Manufacture Codes that could be pulled from WMI and their respective full names. Used for translating later down.
+
   $ManufacturerHash = @{
     'AAC' = 'AcerView';
     'ACI' = 'Asus (ASUSTeK Computer Inc.)';
@@ -176,43 +158,58 @@ function Get-LocalMonitor {
   $monitorArray = @()
 
   foreach ($monitor in $monitors) {
-    if ($null -eq $monitor.UserFriendlyName) {
-      $monitorModel = 'Unknown'
-    }
-    elseif ($monitorModel -like '*800 AIO*' -or $monitorModel -like '*8300 AiO*') {
-      $monitorModel = 'Unknown'
+    $rawManufacturer = if ($monitor.ManufacturerName) {
+      [System.Text.Encoding]::ASCII.GetString($monitor.ManufacturerName) -replace "`0"
     }
     else {
-      $monitorModel = [System.Text.Encoding]::ASCII.GetString($monitor.UserFriendlyName)
+      ''
     }
 
-    $monitorSerialNumber = ([System.Text.Encoding]::ASCII.GetString($monitor.SerialNumberID)).Replace("$([char]0x0000)", '')
-
-    if ($null -eq $monitorSerialNumber -or $monitorSerialNumber -eq '0' -or $monitorSerialNumber -eq '') {
-      $monitorSerialNumber = 'Unknown'
-    }
-
-    $monitorManufacturer = ([System.Text.Encoding]::ASCII.GetString($monitor.ManufacturerName)).Replace("$([char]0x0000)", '')
-
-    if ($ManufacturerHash.ContainsKey($monitorManufacturer)) {
-      $monitorManufacturerFriendlyName = $ManufacturerHash[$monitorManufacturer]
+    $monitorManufacturer = if ($ManufacturerHash.ContainsKey($rawManufacturer)) {
+      $ManufacturerHash[$rawManufacturer]
     }
     else {
-      $monitorManufacturerFriendlyName = 'Unknown'
+      'Unknown'
     }
 
-    $monitorAttachedComputer = $env:COMPUTERNAME
+    $monitorModel = if ($monitor.UserFriendlyName) {
+      $decoded = [System.Text.Encoding]::ASCII.GetString($monitor.UserFriendlyName) -replace "`0"
+      if ($decoded -match '800 AIO|8300 AiO') {
+        'Unknown'
+      }
+      else {
+        $decoded
+      }
+    }
+    else {
+      'Unknown'
+    }
+
+    $monitorSerialNumber = if ($monitor.SerialNumberID) {
+      $decodedSerialNumber = [System.Text.Encoding]::ASCII.GetString($monitor.SerialNumberID) -replace "`0"
+      if ([string]::IsNullOrWhiteSpace($decodedSerialNumber) -or $decodedSerialNumber -eq '0') {
+        'Unknown'
+      }
+      else {
+        $decodedSerialNumber
+      }
+    }
+    else {
+      'Unknown'
+    }
+
+    $computerName = $env:COMPUTERNAME
 
     $monitorObject = [PSCustomObject]@{
-      Manufacturer     = $monitorManufacturerFriendlyName
+      Manufacturer     = $monitorManufacturer
       Model            = $monitorModel
       SerialNumber     = $monitorSerialNumber
-      AttachedComputer = $monitorAttachedComputer
+      AttachedComputer = $computerName
     }
 
     $monitorArray += $monitorObject
   }
-  return , $monitorArray #adding comma because powershell 5.1 won't return an array if there's just 1 object.
-}
 
+  return , $monitorArray
+}
 
