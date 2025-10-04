@@ -28,7 +28,7 @@ Export-ModuleMember -Function $exportedFunctions
 
 }
 
-Task default -Depends InitializeProject, ScaffoldProject, EnforceSyleRules, AnalyzeAndLintScripts, PerformTests, CheckCommentBasedHelp, BumpModuleVersion
+Task default -Depends InitializeProject, ScaffoldProject, EnforceSyleRules, AnalyzeAndLintScripts, PerformTests, CheckCommentBasedHelp, BuildDocumentation
 
 Task InitializeProject {
   Write-Warning "Initializing project at $($PSScriptRoot)"
@@ -227,7 +227,7 @@ Task AnalyzeAndLintScripts -Depends EnforceSyleRules {
   }
 }
 
-Task PerformTests {
+Task PerformTests -Depends AnalyzeAndLintScripts {
   $testsPath = Join-Path $PSScriptRoot 'Tests'
   if (-not (Test-Path $testsPath)) {
     Write-Warning "Tests directory not found at: $testsPath"
@@ -319,7 +319,11 @@ Task BuildDocumentation {
   if (-not (Test-Path $helpOutputFolder)) {
     New-Item -Path $helpOutputFolder -ItemType Directory | Out-Null
   }
-  Import-Module -Name $ModuleName -Force -ErrorAction Stop
+  $loadedModules = Get-module
+  if ($loadedModules.Name -eq $moduleName) {
+    remove-module -name $moduleName
+  }
+  Import-Module ".\$ModuleName.psm1" -Force -ErrorAction Stop
   $exportedFunctions = (Get-Module -Name $moduleName).ExportedCommands.Keys | Sort-Object
   $existingDocs = Get-ChildItem -Path $docsOutputFolder -Filter '*.md' |
     Select-Object -ExpandProperty BaseName |
